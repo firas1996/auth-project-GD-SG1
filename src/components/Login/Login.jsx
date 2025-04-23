@@ -3,7 +3,15 @@ import { useEffect, useReducer, useState } from "react";
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
-const emailReducer = () => {};
+const emailReducer = (prevState, actions) => {
+  if (actions.name === "USER_TYPING") {
+    return { value: actions.payload, isValid: actions.payload.includes("@") };
+  } else if (actions.name === "CLICKED_OUT") {
+    return { value: prevState.value, isValid: prevState.value.includes("@") };
+  } else {
+    return { value: "", isValid: null };
+  }
+};
 
 const Login = (props) => {
   const [enteredEmail, setEnteredEmail] = useState("");
@@ -51,7 +59,7 @@ const Login = (props) => {
 
   const validateEmailHandler = () => {
     // setEmailIsValid(enteredEmail.includes("@"));
-    dispathEmail({ name: "" });
+    dispathEmail({ name: "CLICKED_OUT" });
   };
 
   const validatePasswordHandler = () => {
@@ -60,7 +68,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(email.value, enteredPassword);
   };
 
   return (
@@ -68,14 +76,14 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ""
+            email.isValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            value={email.value}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
