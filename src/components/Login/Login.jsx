@@ -23,7 +23,7 @@ const Login = (props) => {
     const timer = setTimeout(() => {
       console.log("aaa");
       setFormIsValid(
-        enteredEmail.includes("@") && enteredPassword.trim().length > 6
+        email.value.includes("@") && enteredPassword.trim().length > 6
       );
     }, 1000);
 
@@ -31,9 +31,10 @@ const Login = (props) => {
       clearTimeout(timer);
       console.log("zzz");
     };
-  }, [enteredEmail, enteredPassword]);
+  }, [email.value, enteredPassword]);
   const emailChangeHandler = (event) => {
-    setEnteredEmail(event.target.value);
+    // setEnteredEmail(event.target.value);
+    dispathEmail({ name: "USER_TYPING", payload: event.target.value });
     // console.log("aaa");
     // setFormIsValid(
     //   event.target.value.includes("@") && enteredPassword.trim().length > 6
@@ -49,7 +50,8 @@ const Login = (props) => {
   };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes("@"));
+    // setEmailIsValid(enteredEmail.includes("@"));
+    dispathEmail({ name: "" });
   };
 
   const validatePasswordHandler = () => {
