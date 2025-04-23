@@ -13,12 +13,29 @@ const emailReducer = (prevState, actions) => {
   }
 };
 
-const Login = (props) => {
-  const [enteredEmail, setEnteredEmail] = useState("");
-  const [emailIsValid, setEmailIsValid] = useState();
+const passwordReducer = (prevState, actions) => {
+  switch (actions.name) {
+    case "USER_TYPING":
+      return {
+        value: actions.payload,
+        isValid: actions.payload.trim().length > 6,
+      };
+    case "CLICKED_OUT":
+      return {
+        value: prevState.value,
+        isValid: prevState.value.trim().length > 6,
+      };
+    default:
+      return { value: "", isValid: null };
+  }
+};
 
-  const [enteredPassword, setEnteredPassword] = useState("");
-  const [passwordIsValid, setPasswordIsValid] = useState();
+const Login = (props) => {
+  // const [enteredEmail, setEnteredEmail] = useState("");
+  // const [emailIsValid, setEmailIsValid] = useState();
+
+  // const [enteredPassword, setEnteredPassword] = useState("");
+  // const [passwordIsValid, setPasswordIsValid] = useState();
 
   const [formIsValid, setFormIsValid] = useState(false);
 
@@ -26,20 +43,25 @@ const Login = (props) => {
     value: "",
     isValid: null,
   });
+  const [password, dispathPassword] = useReducer(passwordReducer, {
+    value: "",
+    isValid: null,
+  });
+
+  const { isValid: emailIsValid } = email;
+  const { isValid: passwordIsValid } = password;
 
   useEffect(() => {
     const timer = setTimeout(() => {
       console.log("aaa");
-      setFormIsValid(
-        email.value.includes("@") && enteredPassword.trim().length > 6
-      );
+      setFormIsValid(emailIsValid && passwordIsValid);
     }, 1000);
 
     return () => {
       clearTimeout(timer);
       console.log("zzz");
     };
-  }, [email.value, enteredPassword]);
+  }, [emailIsValid, passwordIsValid]);
   const emailChangeHandler = (event) => {
     // setEnteredEmail(event.target.value);
     dispathEmail({ name: "USER_TYPING", payload: event.target.value });
@@ -50,7 +72,8 @@ const Login = (props) => {
   };
 
   const passwordChangeHandler = (event) => {
-    setEnteredPassword(event.target.value);
+    // setEnteredPassword(event.target.value);
+    dispathPassword({ name: "USER_TYPING", payload: event.target.value });
     // console.log("aaa");
     // setFormIsValid(
     //   event.target.value.trim().length > 6 && enteredEmail.includes("@")
@@ -63,12 +86,13 @@ const Login = (props) => {
   };
 
   const validatePasswordHandler = () => {
-    setPasswordIsValid(enteredPassword.trim().length > 6);
+    // setPasswordIsValid(enteredPassword.trim().length > 6);
+    dispathPassword({ name: "CLICKED_OUT" });
   };
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(email.value, enteredPassword);
+    props.onLogin(email.value, password.value);
   };
 
   return (
@@ -90,14 +114,14 @@ const Login = (props) => {
         </div>
         <div
           className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ""
+            password.isValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={password.value}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
