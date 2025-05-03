@@ -1,8 +1,10 @@
-import { useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
+import AuthContext from "../../store/auth-context";
+import axios from "axios";
 const emailReducer = (prevState, actions) => {
   if (actions.name === "USER_TYPING") {
     return { value: actions.payload, isValid: actions.payload.includes("@") };
@@ -30,12 +32,36 @@ const passwordReducer = (prevState, actions) => {
   }
 };
 
-const Login = (props) => {
+const Login = () => {
+  const testLogin = /*async*/ () => {
+    axios
+      .post("http://10.33.2.38:1234/users/signin", {
+        email: email.value,
+        password: password.value,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    // try {
+    //   const res = await axios.post("http://10.33.2.38:1234/users/signin", {
+    //     email: email.value,
+    //     password: password.value,
+    //   });
+    //   console.log(res.data);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
+
   // const [enteredEmail, setEnteredEmail] = useState("");
   // const [emailIsValid, setEmailIsValid] = useState();
 
   // const [enteredPassword, setEnteredPassword] = useState("");
   // const [passwordIsValid, setPasswordIsValid] = useState();
+  const { loginHandler } = useContext(AuthContext);
 
   const [formIsValid, setFormIsValid] = useState(false);
 
@@ -92,7 +118,8 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(email.value, password.value);
+    // loginHandler(email.value, password.value);
+    testLogin();
   };
 
   return (
